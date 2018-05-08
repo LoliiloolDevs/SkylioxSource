@@ -102,7 +102,7 @@ std::string Input() {
 	return Lithium;
 }
 void Main() {
-	//LuaSatetScan
+	//LuaStateScan
 	DWORD Scc = *(DWORD*)(ScriptContext + 0x2);
 	DontUpdateMe = Module::RbxKidScans((char*)&Scc);
 	dmodel = GetGey(DontUpdateMe);
