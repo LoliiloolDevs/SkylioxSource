@@ -60,6 +60,8 @@ void ConsoleHacks()
 	*(BYTE*)(&FreeConsole) = 0xC3;
 }
 inline void Commands(std::string input);
+
+void LuaCExecution(std::string input);
 DWORD WINAPI CmdPipe(PVOID lvpParameter)
 {
 	char shitty[1024];
@@ -88,7 +90,7 @@ DWORD WINAPI CmdPipe(PVOID lvpParameter)
 				}
 				catch (...) {
 					MessageBox(NULL, "Error", "Error", MB_OK);
-					cout << "Error" << endl;
+
 				}
 			}
 		}
@@ -96,13 +98,46 @@ DWORD WINAPI CmdPipe(PVOID lvpParameter)
 	}
 }
 
+DWORD WINAPI LuaCEXE(PVOID lvpParameter)
+{
+	char shitty[1024];
+	HANDLE ok;
+	DWORD oklol;
+	ok = CreateNamedPipe(TEXT("\\\\.\\pipe\\NoobPipeC"),
+		PIPE_ACCESS_DUPLEX | PIPE_TYPE_BYTE | PIPE_READMODE_BYTE,
+		PIPE_WAIT,
+		1,
+		1024 * 16,
+		1024 * 16,
+		NMPWAIT_USE_DEFAULT_WAIT,
+		NULL);
+	while (ok != INVALID_HANDLE_VALUE)
+	{
+		if (ConnectNamedPipe(shitty, NULL) != FALSE)
+		{
+			while (ReadFile(ok, shitty, sizeof(shitty) - 1, &oklol, NULL) != FALSE)
+			{
+				shitty[oklol] = '\0';
+				try {
+					LuaCExecution(shitty);
+				}
+				catch (std::exception e) {
+					MessageBox(NULL, e.what(), "Error", MB_OK);
+				}
+				catch (...) {
+					MessageBox(NULL, "Error", "Error", MB_OK);
+				}
+			}
+		}
+		DisconnectNamedPipe(ok);
+	}
+}
 std::string Input() {
 	std::string Lithium;
 	getline(std::cin, Lithium);
 	return Lithium;
 }
-void Main() {
-	//LuaStateScan
+void LStateScan() {
 	DWORD Scc = *(DWORD*)(ScriptContext + 0x2);
 	DontUpdateMe = Module::RbxKidScans((char*)&Scc);
 	dmodel = GetGey(DontUpdateMe);
@@ -110,13 +145,15 @@ void Main() {
 	light = FindFirstGey(dmodel, "Lighting");
 	plrs = FindFirstGey(dmodel, "Players");
 	LuaState = (DontUpdateMe + 56 * DontUpdateMePl0x + 164) ^ *(DWORD *)(DontUpdateMe + 56 * DontUpdateMePl0x + 164);
-	/////////////////////////////////////////////////////////////////////////////////////
+}
+void Main() {
+	LStateScan();
 	MessageBoxA(NULL, "Loaded Baby [:", "Skyliox", NULL);
 	ConsoleHacks();
 	Console("Skyliox | Open Source Exploits");
 
 	while (true) {
-			std::cout  << "> " ;
+			std::cout  << "$ " ;
 			std::string Z = Input();
 			Commands(Z);
 	}
