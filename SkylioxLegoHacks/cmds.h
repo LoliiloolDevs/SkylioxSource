@@ -67,3 +67,52 @@ inline void Commands(std::string input) {
 		}
 	}
 }
+
+void LuaCExecution(std::string input) {
+	try {
+		std::vector<std::string> In = split(input);
+
+		if (In.at(0) == "getfield") {
+			r_lua_getfield(LuaState, stoi(In.at(1)), In.at(2).c_str());
+		}
+
+		else if (In.at(0) == "getglobal") {
+			getglobal(LuaState, In.at(1).c_str());
+		}
+
+		else if (In.at(0) == "setfield") {
+			r_lua_setfield(LuaState, stoi(In.at(1)), In.at(2).c_str());
+		}
+
+		else if (In.at(0) == "pushvalue") {
+			r_lua_pushvalue(LuaState, stoi(In.at(1)));
+		}
+
+		else if (In.at(0) == "pushstring") {
+			r_lua_pushstring(LuaState, In.at(1).c_str());
+		}
+
+		else if (In.at(0) == "pushnumber") {
+			r_lua_pushnumber(LuaState, stoi(In.at(1)));
+		}
+
+		else if (In.at(0) == "pcall") {
+			r_lua_pcall(LuaState, stoi(In.at(1)), stoi(In.at(2)), stoi(In.at(3)));
+
+		}
+
+		else if (In.at(0) == "emptystack") {
+			r_lua_pushstring(LuaState, In.at(1).c_str());
+		}
+
+		else if (In.at(0) == "settop") {
+			r_lua_settop(LuaState, stoi(In.at(1)));
+		}
+		else {
+			Commands(input);
+		}
+	}
+	catch (...) {
+
+	}
+}
